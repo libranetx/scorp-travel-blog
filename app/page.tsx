@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import PostView from '../components/post/PostView'
+import PostsByTravelType from '@/components/post/PostsByTravelType';
 
 async function getRecentPosts() {
   const res = await fetch('http://localhost:3000/api/posts', { 
@@ -12,9 +13,14 @@ async function getRecentPosts() {
 
 export default async function Home() {
   const recentPosts = await getRecentPosts()
+  const travelTypes = [
+    "Cultural",
+    "Family",
+    "Honeymoon",
+  ];
 
   return (
-    <div>
+    <div className="w-full">
       {/* Enhanced Full-width Hero Section */}
       <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden">
         {/* Background Image with Overlay */}
@@ -56,36 +62,52 @@ export default async function Home() {
       </section>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-12">
-        {/* Recent Posts Section */}
-        <section className="py-8">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800">Recent Adventures</h2>
-            <Link 
-              href="/posts"
-              className="text-blue-600 hover:underline font-medium text-lg flex items-center"
-            >
-              View All Stories
-              <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-              </svg>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {recentPosts.length > 0 ? (
-              recentPosts.map((post: any) => (
-                <div key={post.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
-                  <PostView post={post} mode="view" overrideShowEditButton={false} overrideShowDeleteButton={false} compact={true} />
+      <main className="w-full">
+        {/* Recent Posts Section - Full width background */}
+        <section className="w-full py-8 bg-gray-100">
+          <div className="container mx-auto px-4">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-bold mb-6">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500">
+                  Recent Adventures
+                </span>
+              </h2>
+              <Link 
+                href="/posts"
+                className="text-blue-600 hover:underline font-medium text-lg flex items-center"
+              >
+                View All Stories
+                <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {recentPosts.length > 0 ? (
+                recentPosts.map((post: any) => (
+                  <div key={post.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 bg-white">
+                    <PostView post={post} mode="view" overrideShowEditButton={false} overrideShowDeleteButton={false} compact={true} />
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-500 text-xl">No adventures yet. Be the first to share your story!</p>
                 </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-gray-500 text-xl">No adventures yet. Be the first to share your story!</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </section>
+
+        {/* Travel Types Section - Full width background */}
+        <div className="w-full bg-white py-12 ">
+          <div className="container mx-auto px-4">
+            <div className="space-y-0 ">
+              {travelTypes.map((type) => (
+                <PostsByTravelType key={type} travelType={type} />
+              ))}
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   )
