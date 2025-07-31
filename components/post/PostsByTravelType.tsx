@@ -61,7 +61,8 @@ export default function PostsByTravelType({ travelType }: { travelType: string }
   }
 
   return (
-    <div className="w-full border-b border-gray-200 last:border-b-0">
+    <div className="w-full h-full border-b border-gray-200 last:border-b-0"
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col items-center mb-8">
           <h2 className="text-3xl font-bold mb-4">

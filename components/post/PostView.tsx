@@ -336,7 +336,8 @@ export default function PostView({
 
   if (compact) {
     return (
-      <Card className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+      <Card className="p-4 w-full h-full bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => window.location.href = `/posts/${post?.id}`}>
         <CardHeader className="flex justify-between items-start gap-2 p-0">
           <div className="flex-1">
             <CardTitle className="text-xl font-bold mb-1 line-clamp-1">
@@ -353,7 +354,7 @@ export default function PostView({
             <img
               src={post.imageUrl}
               alt="Post featured"
-              className="w-full h-auto object-cover rounded-md"
+              className="w-full h-50 object-cover rounded-md"
             />
           </div>
         )}
@@ -379,7 +380,8 @@ export default function PostView({
   }
 
   return (
-    <Card className="p-6 bg-white rounded-lg shadow">
+    <Card className="p-6 h-full w-full bg-white rounded-lg shadow "
+   >
       <CardHeader className="flex justify-between items-start gap-2 p-0">
         <div className="flex-1">
           <CardTitle className="text-2xl font-bold mb-1">
