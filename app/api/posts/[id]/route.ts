@@ -1,25 +1,25 @@
-import { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-// GET single post
-export async function GET(
+// 1. Define the handler types explicitly for Next.js 15
+type Handler = (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  context: { params: Promise<{ id: string }> }
+) => Promise<NextResponse>
+
+// 2. Implement each handler with explicit typing
+const getHandler: Handler = async (request, { params }) => {
   try {
-    // Validate ID is a number
-    if (isNaN(parseInt(params.id))) {
+    const { id } = await params
+    const postId = parseInt(id)
+    if (isNaN(postId)) {
       return NextResponse.json(
         { error: "Invalid post ID format" },
         { status: 400 }
       )
     }
 
-    const post = await prisma.post.findUnique({
-      where: { id: parseInt(params.id) }
-    })
-
+    const post = await prisma.post.findUnique({ where: { id: postId } })
     if (!post) {
       return NextResponse.json(
         { error: "Post not found" },
@@ -37,14 +37,11 @@ export async function GET(
   }
 }
 
-// UPDATE post
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+const putHandler: Handler = async (request, { params }) => {
   try {
-    // Validate ID is a number
-    if (isNaN(parseInt(params.id))) {
+    const { id } = await params
+    const postId = parseInt(id)
+    if (isNaN(postId)) {
       return NextResponse.json(
         { error: "Invalid post ID format" },
         { status: 400 }
@@ -52,7 +49,6 @@ export async function PUT(
     }
 
     const body = await request.json()
-
     if (!body.title || !body.content) {
       return NextResponse.json(
         { error: "Title and content are required" },
@@ -60,11 +56,7 @@ export async function PUT(
       )
     }
 
-    // Check if post exists
-    const existingPost = await prisma.post.findUnique({
-      where: { id: parseInt(params.id) }
-    })
-
+    const existingPost = await prisma.post.findUnique({ where: { id: postId } })
     if (!existingPost) {
       return NextResponse.json(
         { error: "Post not found" },
@@ -77,8 +69,8 @@ export async function PUT(
       data: {
         title: body.title,
         content: body.content,
-        travelType: body.travelType || null, // Add travelType to the update
-        imageUrl:body.imageUrl,
+        travelType: body.travelType || null,
+        imageUrl: body.imageUrl,
       },
     })
 
@@ -92,25 +84,18 @@ export async function PUT(
   }
 }
 
-// DELETE post
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+const deleteHandler: Handler = async (request, { params }) => {
   try {
-    // Validate ID is a number
-    if (isNaN(parseInt(params.id))) {
+    const { id } = await params
+    const postId = parseInt(id)
+    if (isNaN(postId)) {
       return NextResponse.json(
         { error: "Invalid post ID format" },
         { status: 400 }
       )
     }
 
-    // Check if post exists
-    const existingPost = await prisma.post.findUnique({
-      where: { id: parseInt(params.id) }
-    })
-
+    const existingPost = await prisma.post.findUnique({ where: { id: postId } })
     if (!existingPost) {
       return NextResponse.json(
         { error: "Post not found" },
@@ -118,10 +103,7 @@ export async function DELETE(
       )
     }
 
-    await prisma.post.delete({
-      where: { id: existingPost.id }
-    })
-
+    await prisma.post.delete({ where: { id: existingPost.id } })
     return NextResponse.json(
       { message: "Post deleted successfully" },
       { status: 200 }
@@ -134,3 +116,8 @@ export async function DELETE(
     )
   }
 }
+
+// 3. Export with proper typing
+export const GET = getHandler
+export const PUT = putHandler
+export const DELETE = deleteHandler

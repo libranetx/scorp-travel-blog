@@ -1,8 +1,15 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import PostView from "../../../components/post/PostView";
 import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -10,15 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationEllipsis,
-} from "@/components/ui/pagination";
+import { useEffect, useMemo, useState } from "react";
+import PostView from "../../../components/post/PostView";
 
 import Sidebar from "@/components/layout/SideBar";
 interface Post {

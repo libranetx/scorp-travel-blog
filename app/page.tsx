@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import PostView from '../components/post/PostView'
 import PostsByTravelType from '@/components/post/PostsByTravelType';
 
@@ -25,11 +26,12 @@ export default async function Home() {
       <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-purple-900/70">
-          <img 
+          <Image 
             src="https://images.unsplash.com/photo-1668875915531-0be186bd38c0?q=80&w=1933&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
             alt="Travel background"
-            className="w-full h-full object-cover mix-blend-overlay"
-            loading="eager"
+            fill
+            className="object-cover mix-blend-overlay"
+            priority
           />
         </div>
         
@@ -60,6 +62,7 @@ export default async function Home() {
           </svg>
         </div>
       </section>
+      
 
       {/* Main Content */}
       <main className="w-full">
@@ -84,7 +87,7 @@ export default async function Home() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {recentPosts.length > 0 ? (
-                recentPosts.map((post: any) => (
+                recentPosts.map((post: { id: number; title: string; content: string; travelType?: string; imageUrl?: string; createdAt: string; updatedAt: string }) => (
                   <div key={post.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 bg-white">
                     <PostView post={post} mode="view" overrideShowEditButton={false} overrideShowDeleteButton={false} compact={true} />
                   </div>

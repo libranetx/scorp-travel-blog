@@ -1,4 +1,3 @@
-import React from 'react'
 import Link from 'next/link'
 
 function Footer() {
@@ -14,7 +13,7 @@ function Footer() {
               Scorp Travels
             </h3>
             <p className="text-sm text-white">
-              Discover the world's hidden gems
+              Discover the world &apos;s hidden gems
             </p>
           </div>
 

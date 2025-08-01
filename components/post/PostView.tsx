@@ -1,35 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,9 +11,40 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Image from 'next/image';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import toast from 'react-hot-toast';
+import { z } from "zod";
 
 const travelTypes = [
   "Adventure",
@@ -286,9 +287,11 @@ export default function PostView({
                 )}
                 {form.watch("imageUrl") && (
                   <div className="mt-2">
-                    <img
-                      src={form.watch("imageUrl")}
+                    <Image
+                      src={form.watch("imageUrl") || ""}
                       alt="Preview"
+                      width={500}
+                      height={300}
                       className="w-full h-auto rounded-md border" 
                     />
                   </div>
@@ -351,9 +354,11 @@ export default function PostView({
 
         {post?.imageUrl && (
           <div className="mb-4">
-            <img
+            <Image
               src={post.imageUrl}
               alt="Post featured"
+              width={500}
+              height={300}
               className="w-full h-50 object-cover rounded-md"
             />
           </div>
@@ -401,9 +406,11 @@ export default function PostView({
 
       {post?.imageUrl && (
         <div className="my-4">
-          <img
+          <Image
             src={post.imageUrl}
             alt="Post featured"
+            width={500}
+            height={300}
             className="w-full h-auto rounded-md border" 
           />
         </div>

@@ -3,13 +3,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '../ui/button'
 import { useState } from 'react'
-import { Menu, X, LogOut, PenSquare, Globe, User, UserPlus, LogIn } from 'lucide-react'
+import { Menu, X, LogOut, PenSquare, Globe, UserPlus, LogIn } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
 export default function Navbar() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
 
   const HIDDEN_PATHS = [
     '/auth/signin',
@@ -58,7 +58,7 @@ export default function Navbar() {
             <>
               {session.user?.role === 'ADMIN' && (
                 <Link href="/dashboard/postsAdmin/new">
-                  <Button size="lg" variant="create" className="flex items-center gap-2 group">
+                  <Button size="lg" variant="create" className="flex items-center gap-2 group cursor-pointer">
                     <PenSquare size={16} className="group-hover:rotate-12 transition-transform" />
                     Craft Journey
                   </Button>
@@ -68,7 +68,7 @@ export default function Navbar() {
                 variant="outline" 
                 size="lg"
                 onClick={handleLogout}
-                className="flex items-center gap-2 border-gray-200 hover:border-gray-300"
+                className="flex items-center gap-2 border-gray-200 hover:border-gray-300 cursor-pointer"
               >
                 <LogOut size={16} />
                 Log Out
@@ -77,13 +77,13 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/auth/signup">
-                <Button variant="outline" size="lg" className="flex items-center gap-2 border-gray-200 hover:border-gray-300">
+                <Button variant="outline" size="lg" className="flex items-center gap-2 border-gray-200 hover:border-gray-300 cursor-pointer">
                   <UserPlus size={16} />
                   Sign Up
                 </Button>
               </Link>
               <Link href="/auth/signin">
-                <Button size="lg" className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-600">
+                <Button size="lg" className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-600 cursor-pointer">
                   <LogIn size={16} />
                   Log In
                 </Button>
