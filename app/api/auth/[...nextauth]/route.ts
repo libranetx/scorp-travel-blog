@@ -4,10 +4,6 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-// Admin credentials (should be in environment variables in production)
-const ADMIN_EMAIL = "admin@example.com";
-const ADMIN_PASSWORD = "egszmat"; 
-
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
@@ -23,9 +19,9 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 // Check for admin login
-                if (credentials.email === ADMIN_EMAIL) {
+                if (credentials.email === process.env.ADMIN_EMAIL) {
                     // Verify admin password
-                    const isAdminPasswordCorrect = credentials.password === ADMIN_PASSWORD;
+                    const isAdminPasswordCorrect = credentials.password === process.env.ADMIN_PASSWORD;
                     
                     if (!isAdminPasswordCorrect) {
                         throw new Error("Invalid admin credentials");
@@ -33,14 +29,14 @@ export const authOptions: NextAuthOptions = {
 
                     // Find or create admin user
                     let adminUser = await prisma.user.findUnique({
-                        where: { email: ADMIN_EMAIL },
+                        where: { email: process.env.ADMIN_EMAIL },
                     });
 
                     if (!adminUser) {
                         adminUser = await prisma.user.create({
                             data: {
-                                email: ADMIN_EMAIL,
-                                password: await bcrypt.hash(ADMIN_PASSWORD, 10),
+                                email: process.env.ADMIN_EMAIL!,
+                                password: await bcrypt.hash(process.env.ADMIN_PASSWORD!, 10),
                                 role: "ADMIN",
                                 name: "Admin"
                             }
@@ -83,6 +79,7 @@ export const authOptions: NextAuthOptions = {
             },
         }),
     ],
+    // ... rest of your configuration remains the same
     session: {
         strategy: "jwt",
     },
@@ -107,7 +104,7 @@ export const authOptions: NextAuthOptions = {
         error: '/auth/signin',
         signOut: '/signout'
     },
-    secret: process.env.NEXTAUTH_SECRET, // Make sure to set this in your environment variables
+    secret: process.env.NEXTAUTH_SECRET,
     debug: process.env.NODE_ENV === 'development',
 };
 
