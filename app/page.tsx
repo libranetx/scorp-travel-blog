@@ -27,7 +27,7 @@ export default async function Home() {
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-purple-900/70">
           <Image 
-            src="https://images.unsplash.com/photo-1668875915531-0be186bd38c0?q=80&w=1933&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+            src="/hero.avif" 
             alt="Travel background"
             fill
             className="object-cover mix-blend-overlay"
