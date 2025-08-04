@@ -10,12 +10,14 @@ RUN apk add --no-cache libc6-compat openssl
 
 # Install dependencies
 FROM base AS deps
-# First copy only the files needed for dependency installation
+# First copy only package files
 COPY package.json package-lock.json* ./
-# Check if package-lock.json exists and choose appropriate install command
+# Install dependencies (use ci if lockfile exists)
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-# Now copy Prisma files and generate client
+
+# Copy prisma files separately
 COPY prisma ./prisma
+# Generate Prisma client
 RUN npx prisma generate
 
 # Build the app
@@ -37,7 +39,7 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-# Copy build output and required files
+# Copy required files with proper permissions
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
@@ -49,8 +51,7 @@ COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 # Use the app user
 USER nextjs
 
-# Expose port
 EXPOSE 3000
 
-# Start app
+# Start app (with migrations)
 CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
