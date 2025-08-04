@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth'
+import { deleteImageFromCloudinary } from '@/lib/cloudinary'
 
 // 1. Define the handler types explicitly for Next.js 15
 type Handler = (
@@ -78,6 +79,7 @@ const putHandler: Handler = async (request, { params }) => {
         content: body.content,
         travelType: body.travelType || null,
         imageUrl: body.imageUrl,
+        imagePublicId: body.imagePublicId,
       },
     })
 
@@ -114,6 +116,16 @@ const deleteHandler: Handler = async (request, { params }) => {
         { error: "Post not found" },
         { status: 404 }
       )
+    }
+
+    // Delete image from Cloudinary if it exists
+    if (existingPost.imagePublicId) {
+      try {
+        await deleteImageFromCloudinary(existingPost.imagePublicId);
+      } catch (error) {
+        console.error('Failed to delete image from Cloudinary:', error);
+        // Continue with post deletion even if image deletion fails
+      }
     }
 
     await prisma.post.delete({ where: { id: existingPost.id } })

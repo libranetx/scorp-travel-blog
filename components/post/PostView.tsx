@@ -62,6 +62,7 @@ const formSchema = z.object({
   content: z.string().min(32, { message: "Content is required" }),
   travelType: z.enum(travelTypes).optional(),
   imageUrl: z.string().optional(),
+  imagePublicId: z.string().optional(),
 });
 
 interface Post {
@@ -71,6 +72,7 @@ interface Post {
   createdAt: string;
   travelType?: string;
   imageUrl?: string;
+  imagePublicId?: string;
 }
 
 interface PostViewProps {
@@ -106,6 +108,7 @@ export default function PostView({
       content: post?.content || "",
       travelType: post?.travelType as z.infer<typeof formSchema>["travelType"] || undefined,
       imageUrl: post?.imageUrl || "",
+      imagePublicId: post?.imagePublicId || "",
     },
   });
 
@@ -139,12 +142,13 @@ export default function PostView({
 
       setUploadStatus({
         success: true,
-        message: "Image uploaded successfully!",
+        message: data.message || "Image uploaded successfully!",
         url: data.url,
       });
 
-      // Update the form with the new image URL
+      // Update the form with the new image URL and public ID
       form.setValue("imageUrl", data.url);
+      form.setValue("imagePublicId", data.public_id);
       return data.url;
     } catch (error: any) {
       setUploadStatus({

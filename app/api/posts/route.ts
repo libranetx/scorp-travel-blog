@@ -48,8 +48,9 @@ export async function POST(request: NextRequest) {
       data: {
         title: body.title,
         content: body.content,
-        travelType: body.travelType || null, // Add travelType to the creation
-        imageUrl:body.imageUrl,
+        travelType: body.travelType || null,
+        imageUrl: body.imageUrl,
+        imagePublicId: body.imagePublicId,
       },
     });
     

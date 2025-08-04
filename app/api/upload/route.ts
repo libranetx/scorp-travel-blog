@@ -1,6 +1,7 @@
 // app/api/upload/route.ts
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
+import { uploadImageToCloudinary } from '@/lib/cloudinary';
 
 export async function POST(request: Request) {
   try {
@@ -20,24 +21,45 @@ export async function POST(request: Request) {
       );
     }
 
-    // For Vercel deployment, we'll use a placeholder image
-    // In production, you should use a cloud storage service like Cloudinary, AWS S3, etc.
-    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    
-    // Use a placeholder image service or return a default image
-    const placeholderUrl = `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(file.name)}`;
-    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      return NextResponse.json(
+        { error: 'Only image files are allowed' },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: 'File size must be less than 5MB' },
+        { status: 400 }
+      );
+    }
+
+    // Convert file to buffer
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Upload to Cloudinary
+    const result = await uploadImageToCloudinary(buffer, {
+      folder: 'blog-app',
+      public_id: `post-${Date.now()}-${file.name.replace(/\s+/g, '-').replace(/\.[^/.]+$/, '')}`,
+    }) as any;
+
     return NextResponse.json({
       success: true,
-      url: placeholderUrl,
-      filename: filename,
-      message: 'Using placeholder image. For production, implement cloud storage.'
+      url: result.secure_url,
+      public_id: result.public_id,
+      filename: file.name,
+      message: 'Image uploaded successfully to Cloudinary'
     });
 
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to upload image' },
       { status: 500 }
     );
   }

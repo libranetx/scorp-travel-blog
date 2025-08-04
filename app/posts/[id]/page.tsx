@@ -18,7 +18,8 @@ async function getPost(id: number) {
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString(),
       travelType: post.travelType || undefined,
-      imageUrl: post.imageUrl || undefined
+      imageUrl: post.imageUrl || undefined,
+      imagePublicId: post.imagePublicId || undefined
     };
   } catch (error) {
     console.error('Error fetching post:', error);
