@@ -4,15 +4,23 @@ import PostView from '../components/post/PostView'
 import PostsByTravelType from '@/components/post/PostsByTravelType';
 
 async function getRecentPosts() {
- const res = await fetch('/api/posts', {
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json'
+  try {
+    const res = await fetch('/api/posts', {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!res.ok) {
+      console.error('Failed to fetch posts:', res.status);
+      return [];
     }
-  });
-  if (!res.ok) throw new Error('Failed to fetch posts')
-  const posts = await res.json()
-  return posts.slice(0, 4) // Get only 3 most recent posts
+    const posts = await res.json()
+    return posts.slice(0, 4) // Get only 4 most recent posts
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return [];
+  }
 }
 
 export default async function Home() {
