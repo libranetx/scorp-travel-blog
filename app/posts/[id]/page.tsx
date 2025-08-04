@@ -1,16 +1,25 @@
 import PostView from "../../../components/post/PostView"
+import { prisma } from "@/lib/prisma"
 
 async function getPost(id: number) {
   try {
-    // Use relative URL for server-side fetching
-    const res = await fetch(`/api/posts/${id}`, {
-      cache: 'no-store'
-    })
-    if (!res.ok) {
-      console.error('Failed to fetch post:', res.status, res.statusText);
-      throw new Error(`Failed to fetch post: ${res.status}`);
+    // Use direct database call instead of fetch
+    const post = await prisma.post.findUnique({
+      where: { id: id }
+    });
+    
+    if (!post) {
+      throw new Error('Post not found');
     }
-    return res.json()
+    
+    // Convert Date objects to strings and handle null values to match the Post interface
+    return {
+      ...post,
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
+      travelType: post.travelType || undefined,
+      imageUrl: post.imageUrl || undefined
+    };
   } catch (error) {
     console.error('Error fetching post:', error);
     throw new Error('Failed to load post');

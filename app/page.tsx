@@ -2,21 +2,25 @@ import Link from 'next/link'
 import Image from 'next/image'
 import PostView from '../components/post/PostView'
 import PostsByTravelType from '@/components/post/PostsByTravelType';
+import { prisma } from '@/lib/prisma';
 
 async function getRecentPosts() {
   try {
-    const res = await fetch('/api/posts', {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    const posts = await prisma.post.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 4
     });
-    if (!res.ok) {
-      console.error('Failed to fetch posts:', res.status);
-      return [];
-    }
-    const posts = await res.json()
-    return posts.slice(0, 4) // Get only 4 most recent posts
+    
+    // Convert Date objects to strings and handle null values to match the Post interface
+    return posts.map(post => ({
+      ...post,
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
+      travelType: post.travelType || undefined,
+      imageUrl: post.imageUrl || undefined
+    }));
   } catch (error) {
     console.error('Error fetching posts:', error);
     return [];

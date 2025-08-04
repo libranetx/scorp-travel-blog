@@ -3,8 +3,15 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const travelType = searchParams.get('travelType');
+
+    const whereClause = travelType ? {
+      travelType: travelType
+    } : {};
 
     const posts = await prisma.post.findMany({
+      where: whereClause,
       orderBy: {
         createdAt: 'desc' // Sort by createdAt in descending order (newest first)
       }
