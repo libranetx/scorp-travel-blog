@@ -18,40 +18,7 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Email and password are required");
                 }
 
-                // Check for admin login
-                if (credentials.email === process.env.ADMIN_EMAIL) {
-                    // Verify admin password
-                    const isAdminPasswordCorrect = credentials.password === process.env.ADMIN_PASSWORD;
-                    
-                    if (!isAdminPasswordCorrect) {
-                        throw new Error("Invalid admin credentials");
-                    }
-
-                    // Find or create admin user
-                    let adminUser = await prisma.user.findUnique({
-                        where: { email: process.env.ADMIN_EMAIL },
-                    });
-
-                    if (!adminUser) {
-                        adminUser = await prisma.user.create({
-                            data: {
-                                email: process.env.ADMIN_EMAIL!,
-                                password: await bcrypt.hash(process.env.ADMIN_PASSWORD!, 10),
-                                role: "ADMIN",
-                                name: "Admin"
-                            }
-                        });
-                    }
-
-                    return {
-                        id: adminUser.id,
-                        email: adminUser.email,
-                        name: adminUser.name,
-                        role: adminUser.role || "ADMIN"
-                    };
-                }
-
-                // Regular user login
+                // Find user in database
                 const user = await prisma.user.findUnique({
                     where: { email: credentials.email },
                 });
@@ -60,7 +27,7 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("No user found with this email");
                 }
 
-                // Verify password for regular users
+                // Verify password
                 const passwordsMatch = await bcrypt.compare(
                     credentials.password,
                     user.password!

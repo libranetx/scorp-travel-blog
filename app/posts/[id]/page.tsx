@@ -1,7 +1,8 @@
 import PostView from "../../../components/post/PostView"
 
 async function getPost(id: number) {
-  const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/posts/${id}`, {
+  // Use relative URL for server-side fetching
+  const res = await fetch(`/api/posts/${id}`, {
     cache: 'no-store'
   })
   if (!res.ok) throw new Error('Failed to fetch post')

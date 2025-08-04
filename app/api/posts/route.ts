@@ -1,13 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
-import { validateEnvironment } from '@/lib/env-check';
 
 export async function GET(request: NextRequest) {
   try {
-    // Validate environment in production
-    if (process.env.NODE_ENV === 'production') {
-      validateEnvironment();
-    }
 
     const posts = await prisma.post.findMany({
       orderBy: {
