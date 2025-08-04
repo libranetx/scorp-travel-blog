@@ -127,7 +127,14 @@ export default function PostView({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Image upload failed");
+        const data = await response.json();
+        if (response.status === 401) {
+          throw new Error("Please sign in to upload images");
+        } else if (response.status === 403) {
+          throw new Error("Admin access required to upload images");
+        } else {
+          throw new Error(data.error || "Image upload failed");
+        }
       }
 
       setUploadStatus({
@@ -165,9 +172,14 @@ export default function PostView({
       });
 
       if (!response.ok) {
-        throw new Error(
-          mode === "create" ? "Failed to create post" : "Failed to update post"
-        );
+        const errorData = await response.json();
+        if (response.status === 401) {
+          throw new Error("Please sign in to " + (mode === "create" ? "create" : "update") + " posts");
+        } else if (response.status === 403) {
+          throw new Error("Admin access required to " + (mode === "create" ? "create" : "update") + " posts");
+        } else {
+          throw new Error(errorData.error || (mode === "create" ? "Failed to create post" : "Failed to update post"));
+        }
       }
       
       const successMessage = mode === "create" 
@@ -193,7 +205,14 @@ export default function PostView({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete post");
+        const errorData = await response.json();
+        if (response.status === 401) {
+          throw new Error("Please sign in to delete posts");
+        } else if (response.status === 403) {
+          throw new Error("Admin access required to delete posts");
+        } else {
+          throw new Error(errorData.error || "Failed to delete post");
+        }
       }
 
       toast.success("Post deleted successfully!");

@@ -34,6 +34,23 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect post creation and editing routes
+  if (request.nextUrl.pathname.startsWith('/posts/new') || 
+      request.nextUrl.pathname.startsWith('/posts/edit')) {
+    const token = await getToken({ 
+      req: request, 
+      secret: process.env.NEXTAUTH_SECRET 
+    })
+
+    if (!token) {
+      return NextResponse.redirect(new URL('/auth/signin', request.url))
+    }
+
+    if (token.role !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/posts', request.url))
+    }
+  }
+
   return NextResponse.next()
 }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth'
 
 // 1. Define the handler types explicitly for Next.js 15
 type Handler = (
@@ -39,6 +40,12 @@ const getHandler: Handler = async (request, { params }) => {
 
 const putHandler: Handler = async (request, { params }) => {
   try {
+    // Check admin authentication
+    const authResult = await requireAdmin();
+    if (authResult instanceof NextResponse) {
+      return authResult;
+    }
+    
     const { id } = await params
     const postId = parseInt(id)
     if (isNaN(postId)) {
@@ -86,6 +93,12 @@ const putHandler: Handler = async (request, { params }) => {
 
 const deleteHandler: Handler = async (request, { params }) => {
   try {
+    // Check admin authentication
+    const authResult = await requireAdmin();
+    if (authResult instanceof NextResponse) {
+      return authResult;
+    }
+    
     const { id } = await params
     const postId = parseInt(id)
     if (isNaN(postId)) {

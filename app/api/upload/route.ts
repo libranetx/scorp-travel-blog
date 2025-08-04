@@ -1,8 +1,15 @@
 // app/api/upload/route.ts
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
+    // Check admin authentication
+    const authResult = await requireAdmin();
+    if (authResult instanceof NextResponse) {
+      return authResult;
+    }
+    
     const formData = await request.formData();
     const file = formData.get('file') as File;
 
