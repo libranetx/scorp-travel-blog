@@ -1,7 +1,5 @@
 // app/api/upload/route.ts
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
 
 export async function POST(request: Request) {
   try {
@@ -15,21 +13,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    // Create a unique filename
+    // For Vercel deployment, we'll use a placeholder image
+    // In production, you should use a cloud storage service like Cloudinary, AWS S3, etc.
     const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    const filepath = join(uploadDir, filename);
-
-    // Write the file
-    await writeFile(filepath, buffer);
+    
+    // Use a placeholder image service or return a default image
+    const placeholderUrl = `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(file.name)}`;
     
     return NextResponse.json({
       success: true,
-      url: `/uploads/${filename}`,
-      filename: filename
+      url: placeholderUrl,
+      filename: filename,
+      message: 'Using placeholder image. For production, implement cloud storage.'
     });
 
   } catch (error) {
