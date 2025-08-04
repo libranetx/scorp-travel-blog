@@ -1,5 +1,7 @@
 // app/api/upload/route.ts
 import { NextResponse } from 'next/server';
+import { writeFile } from 'fs/promises';
+import { join } from 'path';
 
 export async function POST(request: Request) {
   try {
@@ -8,23 +10,30 @@ export async function POST(request: Request) {
 
     if (!file) {
       return NextResponse.json(
-        { error: 'No file received' }, 
+        { error: 'No file received' },
         { status: 400 }
       );
     }
 
-    // For Vercel deployment, we'll return a placeholder URL
-    // In production, you should use a cloud storage service like Cloudinary, AWS S3, etc.
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    
+    // Create a unique filename
     const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    const uploadDir = join(process.cwd(), 'public', 'uploads');
+    const filepath = join(uploadDir, filename);
+
+    // Write the file
+    await writeFile(filepath, buffer);
     
     return NextResponse.json({
       success: true,
       url: `/uploads/${filename}`,
-      message: 'File upload simulated. Use cloud storage for production.'
+      filename: filename
     });
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error uploading file:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
