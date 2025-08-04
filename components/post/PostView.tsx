@@ -127,8 +127,6 @@ export default function PostView({
         body: formData,
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
         const data = await response.json();
         if (response.status === 401) {
@@ -139,6 +137,8 @@ export default function PostView({
           throw new Error(data.error || "Image upload failed");
         }
       }
+
+      const data = await response.json();
 
       setUploadStatus({
         success: true,
