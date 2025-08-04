@@ -10,14 +10,14 @@ RUN apk add --no-cache libc6-compat openssl
 
 # Install dependencies
 FROM base AS deps
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json prisma ./prisma/
 RUN npm ci
+RUN npx prisma generate
 
 # Build the app
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npx prisma generate
 RUN npm run build
 
 # Production runtime image
@@ -33,12 +33,14 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-# Copy build output
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# Copy build output and required files
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 # Use the app user
 USER nextjs
@@ -46,5 +48,9 @@ USER nextjs
 # Expose port
 EXPOSE 3000
 
-# Prisma migrate + start app using Next.js
-CMD npx prisma migrate deploy && npm run start
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:3000/api/health || exit 1
+
+# Start app
+CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
