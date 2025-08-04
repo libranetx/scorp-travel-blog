@@ -10,8 +10,12 @@ RUN apk add --no-cache libc6-compat openssl
 
 # Install dependencies
 FROM base AS deps
-COPY package.json package-lock.json prisma ./prisma/
-RUN npm ci
+# First copy only the files needed for dependency installation
+COPY package.json package-lock.json* ./
+# Check if package-lock.json exists and choose appropriate install command
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+# Now copy Prisma files and generate client
+COPY prisma ./prisma
 RUN npx prisma generate
 
 # Build the app
@@ -47,10 +51,6 @@ USER nextjs
 
 # Expose port
 EXPOSE 3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s \
-  CMD curl -f http://localhost:3000/api/health || exit 1
 
 # Start app
 CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
