@@ -125,6 +125,8 @@ export default function PostView({
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
+        // Add credentials to ensure cookies are sent
+        credentials: 'include',
       });
 
       if (!response.ok) {

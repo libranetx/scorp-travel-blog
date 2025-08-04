@@ -58,8 +58,21 @@ export async function POST(request: Request) {
 
   } catch (error) {
     console.error('Error uploading file:', error);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to upload image';
+    if (error instanceof Error) {
+      if (error.message.includes('Cloudinary')) {
+        errorMessage = 'Cloudinary upload failed. Please check your configuration.';
+      } else if (error.message.includes('authentication')) {
+        errorMessage = 'Authentication failed. Please sign in again.';
+      } else {
+        errorMessage = error.message;
+      }
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to upload image' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
