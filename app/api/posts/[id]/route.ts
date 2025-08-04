@@ -31,7 +31,7 @@ const getHandler: Handler = async (request, { params }) => {
   } catch (error) {
     console.error('Error fetching post:', error)
     return NextResponse.json(
-      { error: "Failed to fetch post" },
+      { error: "Failed to fetch post", details: process.env.NODE_ENV === 'development' ? error : undefined },
       { status: 500 }
     )
   }
@@ -78,7 +78,7 @@ const putHandler: Handler = async (request, { params }) => {
   } catch (error) {
     console.error('Error updating post:', error)
     return NextResponse.json(
-      { error: "Failed to update post" },
+      { error: "Failed to update post", details: process.env.NODE_ENV === 'development' ? error : undefined },
       { status: 500 }
     )
   }
@@ -111,7 +111,7 @@ const deleteHandler: Handler = async (request, { params }) => {
   } catch (error) {
     console.error('Error deleting post:', error)
     return NextResponse.json(
-      { error: "Failed to delete post" },
+      { error: "Failed to delete post", details: process.env.NODE_ENV === 'development' ? error : undefined },
       { status: 500 }
     )
   }

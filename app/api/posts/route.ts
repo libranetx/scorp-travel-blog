@@ -1,8 +1,14 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
+import { validateEnvironment } from '@/lib/env-check';
 
 export async function GET(request: NextRequest) {
   try {
+    // Validate environment in production
+    if (process.env.NODE_ENV === 'production') {
+      validateEnvironment();
+    }
+
     const posts = await prisma.post.findMany({
       orderBy: {
         createdAt: 'desc' // Sort by createdAt in descending order (newest first)
@@ -12,7 +18,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching posts:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch posts' },
+      { error: 'Failed to fetch posts', details: process.env.NODE_ENV === 'development' ? error : undefined },
       { status: 500 }
     );
   }
@@ -42,7 +48,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating post:', error);
     return NextResponse.json(
-      { error: 'Failed to create post' },
+      { error: 'Failed to create post', details: process.env.NODE_ENV === 'development' ? error : undefined },
       { status: 500 }
     );
   }
